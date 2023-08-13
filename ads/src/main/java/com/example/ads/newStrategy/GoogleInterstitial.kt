@@ -14,11 +14,11 @@ import java.util.Stack
 class GoogleInterstitial(context: Context?) {
     private val totalLevels = 4
     private var adUnits: ArrayList<ArrayList<Any>>? = null
-    private val inter5 = "ca-app-pub-9507635869843997/6951283783"
-    private val inter4 = "ca-app-pub-9507635869843997/6975334511"
-    private val interHigh = "ca-app-pub-9507635869843997/3227661195"
-    private val interMed = "ca-app-pub-9507635869843997/5388024324"
-    private val interAll = "ca-app-pub-9507635869843997/7493127696"
+    private val inter5 = "ca-app-pub-9507635869843997/1626421448"
+    private val inter4 = "ca-app-pub-9507635869843997/3638341261"
+    private val interHigh = "ca-app-pub-9507635869843997/7154080294"
+    private val interMed = "ca-app-pub-9507635869843997/2325259595"
+    private val interAll = "ca-app-pub-9507635869843997/5840998621"
 
     init {
         instantiateList()

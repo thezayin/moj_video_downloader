@@ -18,6 +18,7 @@ import com.bluelock.moj.interfaces.ItemClickListener
 import com.bluelock.moj.remote.RemoteConfig
 import com.bluelock.moj.ui.presentation.base.BaseFragment
 import com.bluelock.moj.util.Utils
+import com.bluelock.moj.util.isConnected
 import com.example.ads.GoogleManager
 import com.example.ads.databinding.MediumNativeAdLayoutBinding
 import com.example.ads.databinding.NativeAdBannerLayoutBinding
@@ -27,6 +28,7 @@ import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -42,20 +44,15 @@ class DownloadedFragment : BaseFragment<FragmentDownloadedBinding>(), ItemClickL
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDownloadedBinding =
         FragmentDownloadedBinding::inflate
 
-
-
     @Inject
     lateinit var googleManager: GoogleManager
-
 
     @Inject
     lateinit var remoteConfig: RemoteConfig
 
     private var nativeAd: NativeAd? = null
-
     private var fileList: ArrayList<File> = ArrayList()
     private lateinit var myAdapter: MyAdapter
-
 
     override fun onCreatedView() {
         initRecyclerView()
@@ -72,18 +69,14 @@ class DownloadedFragment : BaseFragment<FragmentDownloadedBinding>(), ItemClickL
         binding.apply {
             btnBack.setOnClickListener {
                 showInterstitialAd {}
-                    findNavController().navigateUp()
+                findNavController().navigateUp()
 
             }
         }
     }
 
-
-
     private fun initRecyclerView() {
-
         myAdapter = MyAdapter(fileList, this@DownloadedFragment)
-
         binding.downloaded.apply {
             setHasFixedSize(true)
             layoutManager =
@@ -94,7 +87,6 @@ class DownloadedFragment : BaseFragment<FragmentDownloadedBinding>(), ItemClickL
                 )
             adapter = myAdapter
         }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -112,23 +104,21 @@ class DownloadedFragment : BaseFragment<FragmentDownloadedBinding>(), ItemClickL
 
     }
 
-
     override fun onItemClicked(file: File) {
-        showInterstitialAd {}
-            val uri =
-                FileProvider.getUriForFile(
-                    requireActivity(),
-                    requireActivity().applicationContext.packageName + ".provider",
-                    file
-                )
+        showRewardedAd {}
+        val uri =
+            FileProvider.getUriForFile(
+                requireActivity(),
+                requireActivity().applicationContext.packageName + ".provider",
+                file
+            )
 
-            Intent().apply {
-                action = Intent.ACTION_VIEW
-                setDataAndType(uri, requireActivity().contentResolver.getType(uri))
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(this)
-            }
-
+        Intent().apply {
+            action = Intent.ACTION_VIEW
+            setDataAndType(uri, requireActivity().contentResolver.getType(uri))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            startActivity(this)
+        }
     }
 
     private fun showNativeAd() {
@@ -164,7 +154,7 @@ class DownloadedFragment : BaseFragment<FragmentDownloadedBinding>(), ItemClickL
 
             binding.btnDropDown.setOnClickListener {
                 showInterstitialAd {}
-                    binding.dropLayout.visibility = View.GONE
+                binding.dropLayout.visibility = View.GONE
 
             }
             binding.btnDropUp.visibility = View.INVISIBLE
@@ -172,9 +162,39 @@ class DownloadedFragment : BaseFragment<FragmentDownloadedBinding>(), ItemClickL
         }
     }
 
+    private fun showRewardedAd(callback: () -> Unit) {
+        if (remoteConfig.showInterstitial) {
+
+            if (!requireActivity().isConnected()) {
+                callback.invoke()
+                return
+            }
+            val ad: RewardedAd? =
+                googleManager.createRewardedAd()
+
+            if (ad == null) {
+                callback.invoke()
+            } else {
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+
+                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                        super.onAdFailedToShowFullScreenContent(error)
+                        callback.invoke()
+                    }
+                }
+
+                ad.show(requireActivity()) {
+                    callback.invoke()
+                }
+            }
+        } else {
+            callback.invoke()
+        }
+    }
+
     private fun showInterstitialAd(callback: () -> Unit) {
         if (remoteConfig.showInterstitial) {
-            Log.d("remoteconfig_inter",remoteConfig.showInterstitial.toString())
+            Log.d("remoteconfig_inter", remoteConfig.showInterstitial.toString())
             val ad: InterstitialAd? =
                 googleManager.createInterstitialAd(GoogleInterstitialType.MEDIUM)
 
@@ -209,7 +229,7 @@ class DownloadedFragment : BaseFragment<FragmentDownloadedBinding>(), ItemClickL
                         showNativeAd()
                     }
                     delay(30000L)
-                    showInterstitialAd {  }
+                    showInterstitialAd { }
                 }
             }
         }

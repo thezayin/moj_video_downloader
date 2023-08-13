@@ -1,16 +1,10 @@
-package com.bluelock.moj.models;
+package com.bluelock.moj.models
 
-import java.util.ArrayList;
+class MojVideo {
+    var error = false
+    var data: ArrayList<Data>? = null
 
-public class MojVideo {
-    public boolean error;
-    public String msg;
-    public ArrayList<Data> data;
-
-    public class Data {
-        public String url;
-        public String format;
-        public String ext;
-        public String format_id;
+    class Data {
+        var url: String? = null
     }
 }

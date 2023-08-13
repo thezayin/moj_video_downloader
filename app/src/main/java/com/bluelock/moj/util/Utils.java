@@ -4,6 +4,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,18 +32,16 @@ import java.io.File;
 import java.net.URLConnection;
 
 
+/** @noinspection RegExpRedundantEscape */
 public class Utils {
     private static final String TAG = "Utils";
-    private static final String MOJAPP_REGEX = "^https?:\\/\\/mojapp\\.in\\/@[\\w.-]+\\/video\\/\\d+\\?referrer=[\\w-]+$";
     public static Dialog customDialog;
 
     public static String RootDirectoryMoj = "/Smart_Downloader/moj/";
 
     public static File RootDirectoryMojShow = new File(Environment.getExternalStorageDirectory() + "/Download" + RootDirectoryMoj);
-    private final Context context;
 
-    public Utils(Context mContext) {
-        context = mContext;
+    public Utils() {
     }
 
     public static void setToast(Context mContext, String str) {
@@ -51,6 +50,7 @@ public class Utils {
     }
 
 
+    /** @noinspection ResultOfMethodCallIgnored*/
     public static void createMojFolder() {
         if (!RootDirectoryMojShow.exists()) {
             RootDirectoryMojShow.mkdirs();
@@ -66,7 +66,7 @@ public class Utils {
         }
         customDialog = new BottomSheetDialog(activity, R.style.SheetDialog);
         LayoutInflater inflater = LayoutInflater.from(activity);
-        View mView = inflater.inflate(R.layout.layout_progress_dialog, null);
+        @SuppressLint("InflateParams") View mView = inflater.inflate(R.layout.layout_progress_dialog, null);
         customDialog.setCancelable(false);
         customDialog.setContentView(mView);
         if (!customDialog.isShowing() && !activity.isFinishing()) {
@@ -74,14 +74,14 @@ public class Utils {
         }
     }
 
-    public static void hideProgressDialog(Activity activity) {
+    public static void hideProgressDialog() {
         System.out.println("Hide");
         if (customDialog != null && customDialog.isShowing()) {
             customDialog.dismiss();
         }
     }
 
-    public static FVideo startDownload(Context context, String videoUrl, int urlType) {
+    public static FVideo startDownload(Context context, String videoUrl) {
 
 
         int result = ContextCompat.checkSelfPermission(context, WRITE_EXTERNAL_STORAGE);
@@ -119,11 +119,7 @@ public class Utils {
 
         try {
             MediaScannerConnection.scanFile(context, new String[]{new File(DIRECTORY_DOWNLOADS + "/" + fileName).getAbsolutePath()},
-                    null, new MediaScannerConnection.OnScanCompletedListener() {
-                        public void onScanCompleted(String path, Uri uri) {
-                            Log.d("videoProcess", "onScanCompleted: " + path);
-                        }
-                    });
+                    null, (path, uri1) -> Log.d("videoProcess", "onScanCompleted: " + path));
 
 
         } catch (Exception e) {
@@ -138,13 +134,7 @@ public class Utils {
     }
 
 
-    public static boolean isSnapChatUrl(String url) {
-        return url.matches(MOJAPP_REGEX);
-    }
-
-    public static boolean isMojUrl(String url) {
-        return url.matches(MOJAPP_REGEX);
-    }
+    /** @noinspection DataFlowIssue*/
     public static void deleteVideoFromFile(Context context, FVideo video) {
         if (video.getState() == FVideo.COMPLETE) {
 
@@ -176,6 +166,7 @@ public class Utils {
     }
 
 
+    /** @noinspection DataFlowIssue*/
     public static boolean isVideoFile(Context context, String path) {
         if (path.startsWith("content")) {
             DocumentFile fromTreeUri = DocumentFile.fromSingleUri(context, Uri.parse(path));

@@ -1,6 +1,7 @@
 package com.bluelock.moj.ui.presentation.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
@@ -46,7 +47,7 @@ import com.bluelock.moj.util.Constants.downloadVideos
 import com.bluelock.moj.util.Utils
 import com.bluelock.moj.util.Utils.createMojFolder
 import com.bluelock.moj.util.Utils.startDownload
-import com.bluelock.snapchatdownloader.util.isConnected
+import com.bluelock.moj.util.isConnected
 import com.example.ads.GoogleManager
 import com.example.ads.databinding.MediumNativeAdLayoutBinding
 import com.example.ads.databinding.NativeAdBannerLayoutBinding
@@ -83,15 +84,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
     @Inject
     lateinit var googleManager: GoogleManager
 
-
     @Inject
     lateinit var remoteConfig: RemoteConfig
 
     private var nativeAd: NativeAd? = null
-
-
     private var urlType = 0
-
     private var adapter: ListAdapter? = null
     var videos: ArrayList<FVideo>? = null
     var db: Database? = null
@@ -103,12 +100,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
     private lateinit var consentInformation: ConsentInformation
     private lateinit var csForm: ConsentForm
 
-
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreatedView() {
         showDownloadingDialog()
         if (remoteConfig.nativeAd) {
             showDropDown()
-            Log.d("remoteconfig_dasj", remoteConfig.nativeAd.toString())
         }
         showNativeAd()
         activity = requireActivity()
@@ -123,7 +119,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
 
         db = Database.init(requireActivity())
         db?.setCallback {
-            Log.d("TAG", "onUpdateDatabase: MainActivity")
             updateListData()
         }
 
@@ -138,8 +133,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
         handleIntent()
         observe()
         showRecursiveAds()
-        onClick()
-
     }
 
     private fun showDownloadingDialog() {
@@ -192,8 +185,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                     FVideo.COMPLETE -> {
                         //complete download and processing ready to use
                         val location: String = video.fileUri!!
-
-
                         //Downloaded video play into video player
                         val file = File(location)
                         if (file.exists()) {
@@ -224,7 +215,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                                 "File doesn't exists",
                                 Toast.LENGTH_LONG
                             ).show()
-                            Log.d("TAG", "onItemClickListener: file " + file.path)
 
                             //Delete the video instance from the list
                             db?.deleteAVideo(video.downloadId)
@@ -259,10 +249,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
 
     private fun observe() {
         binding.apply {
-
-
             btnSetting.setOnClickListener {
-                showInterstitialAd {}
+                showRewardedAd {}
                 val action = DashboardFragmentDirections.actionDashboardFragmentToSettingFragment()
                 findNavController().navigate(action)
             }
@@ -296,7 +284,13 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 linkEt.text = null
             }
 
+            btnDownloaded.setOnClickListener {
+                showRewardedAd { }
+                findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToDownloadedFragment())
+            }
+
             btnDownload.setOnClickListener {
+                showInterstitialAd { }
                 val ll = linkEt.text.toString().trim { it <= ' ' }
 
                 if (ll == "") {
@@ -314,7 +308,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                     }
                     when (urlType) {
                         MOJ_URL -> {
-                         getMojData()
+                            getMojData()
                         }
                     }
 
@@ -322,7 +316,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
             }
         }
     }
-
 
     private fun showConsent() {
         val params = ConsentRequestParameters
@@ -354,10 +347,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                         requireActivity()
                     ) {
                         if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.OBTAINED) {
-                            Log.d(
-                                "jeje",
-                                "currentConsentStatus:${consentInformation.consentStatus}"
-                            )
+
                         }
                         loadForm()
                     }
@@ -368,111 +358,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
             }
         )
     }
-
-
-    //Ads Views
-    private fun showNativeAd() {
-        if (remoteConfig.nativeAd) {
-            nativeAd = googleManager.createNativeAdSmall()
-            nativeAd?.let {
-                val nativeAdLayoutBinding = NativeAdBannerLayoutBinding.inflate(layoutInflater)
-                nativeAdLayoutBinding.nativeAdView.loadNativeAd(ad = it)
-                binding.nativeView.removeAllViews()
-                binding.nativeView.addView(nativeAdLayoutBinding.root)
-                binding.nativeView.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private fun showInterstitialAd(callback: () -> Unit) {
-        if (remoteConfig.showInterstitial) {
-            Log.d("remoteconfig_inter", remoteConfig.showInterstitial.toString())
-            val ad: InterstitialAd? =
-                googleManager.createInterstitialAd(GoogleInterstitialType.MEDIUM)
-
-            if (ad == null) {
-                callback.invoke()
-                return
-            } else {
-                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        super.onAdDismissedFullScreenContent()
-                        callback.invoke()
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                        super.onAdFailedToShowFullScreenContent(error)
-                        callback.invoke()
-                    }
-                }
-                ad.show(requireActivity())
-            }
-        } else {
-            callback.invoke()
-        }
-    }
-
-    private fun showDropDown() {
-        val nativeAdCheck = googleManager.createNativeFull()
-        val nativeAd = googleManager.createNativeFull()
-        Log.d("ggg_nul", "nativeAd:${nativeAdCheck}")
-        nativeAdCheck?.let {
-            Log.d("ggg_lest", "nativeAdEx:${nativeAd}")
-            binding.apply {
-                dropLayout.bringToFront()
-                nativeViewDrop.bringToFront()
-            }
-            val nativeAdLayoutBinding = MediumNativeAdLayoutBinding.inflate(layoutInflater)
-            nativeAdLayoutBinding.nativeAdView.loadNativeAd(ad = it)
-            binding.nativeViewDrop.removeAllViews()
-            binding.nativeViewDrop.addView(nativeAdLayoutBinding.root)
-            binding.nativeViewDrop.visibility = View.VISIBLE
-            binding.dropLayout.visibility = View.VISIBLE
-
-            binding.btnDropDown.setOnClickListener {
-                binding.dropLayout.visibility = View.GONE
-            }
-            binding.btnDropUp.visibility = View.INVISIBLE
-        }
-    }
-
-    private fun onClick() {
-        binding.apply {
-            btnDownloaded.setOnClickListener {
-                showInterstitialAd {}
-                val action =
-                    DashboardFragmentDirections.actionDashboardFragmentToDownloadedFragment()
-                findNavController().navigate(action)
-            }
-
-            btnDownload.setOnClickListener {
-                val ll = linkEt.text.toString().trim { it <= ' ' }
-                if (ll == "") {
-                    Utils.setToast(
-                        requireActivity(),
-                        resources.getString(R.string.enter_url)
-                    )
-                } else if (!Patterns.WEB_URL.matcher(ll).matches()) {
-                    Utils.setToast(
-                        requireActivity(),
-                        resources.getString(R.string.enter_valid_url)
-                    )
-                } else {
-                    if (urlType == 0) {
-                        urlType = MOJ_URL
-                    }
-                    when (urlType) {
-
-                        MOJ_URL -> {
-                           getMojData()
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
 
     private fun checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -496,35 +381,33 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
         }
     }
 
-
     private fun getMojData() {
         binding.apply {
             createMojFolder()
-            val urlString: String = linkEt.text.toString()
             Utils.showProgressDialog(requireActivity())
             val videoLink: String = linkEt.text.toString().trim { it <= ' ' }
             val video: Call<MojVideo> = downloadAPIInterface!!.getMojVideos(videoLink)
             video.enqueue(object : Callback<MojVideo> {
                 override fun onResponse(call: Call<MojVideo>, response: Response<MojVideo>) {
-                    Utils.hideProgressDialog(activity)
+                    Utils.hideProgressDialog()
                     if (response.isSuccessful) {
                         val mojVideo: MojVideo? = response.body()
                         if (mojVideo == null) {
-                            showStartDownloadDialogR("", MOJ_URL)
+                            showStartDownloadDialogR("")
                             return
                         }
                         if (!mojVideo.error) {
-                            val data: java.util.ArrayList<MojVideo.Data> = mojVideo.data
-                            showStartDownloadDialogR(data[0].url, MOJ_URL)
+                            val data: ArrayList<MojVideo.Data>? = mojVideo.data
+                            showStartDownloadDialogR(data?.get(0)!!.url)
                         } else {
-                            showStartDownloadDialogR("", MOJ_URL)
+                            showStartDownloadDialogR("")
                         }
                     }
                 }
 
                 override fun onFailure(call: Call<MojVideo?>, t: Throwable) {
-                    Utils.hideProgressDialog(activity)
-                    showStartDownloadDialogR("", MOJ_URL)
+                    Utils.hideProgressDialog()
+                    showStartDownloadDialogR("")
                 }
             })
         }
@@ -537,12 +420,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
         }
     }
 
-
     private fun handleIntent() {
         val intent = requireActivity().intent
 
         if (intent == null || intent.action == null) {
-            Log.d("TAG", "handleIntent: intent is null")
             return
         }
         if (intent.action == Intent.ACTION_SEND && intent.type != null) {
@@ -560,7 +441,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
             downloadingDialog.dismiss()
             val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             if (downloadVideos.containsKey(id)) {
-                Log.d("receiver", "onReceive: download complete")
                 val fVideo: FVideo? = db?.getVideo(id)
                 val videoPath: String = Environment.getExternalStorageDirectory().toString() +
                         "/Download" + Utils.RootDirectoryMoj + fVideo?.fileName
@@ -585,12 +465,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 }
 
                 btnOk?.setOnClickListener {
-                    showInterstitialAd {}
+                    showRewardedAd {}
                     dialog.dismiss()
 
                 }
                 btnClose?.setOnClickListener {
-                    showInterstitialAd {}
+                    showRewardedAd {}
                     dialog.dismiss()
                 }
 
@@ -601,12 +481,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
         }
     }
 
-    private fun showStartDownloadDialogR(link: String?, urlType: Int) {
+    private fun showStartDownloadDialogR(link: String?) {
         try {
-            Log.d("jejeDR", "showStartDownloadDialogR: link $link")
-            //if link not found
             if (link == null || link == "") {
-                Log.d("jejeDRS", "Empty $link")
                 val dialog = BottomSheetDialog(requireActivity(), R.style.SheetDialog)
                 dialog.setContentView(R.layout.dialog_bottom_video_not_found_)
                 val btnOk = dialog.findViewById<Button>(R.id.btn_clear)
@@ -629,19 +506,18 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 dialog.setCanceledOnTouchOutside(false)
 
                 btnOk?.setOnClickListener {
-                    showInterstitialAd {}
+                    showRewardedAd {}
                     dialog.dismiss()
 
                 }
                 btnCancel?.setOnClickListener {
-                    showInterstitialAd { }
+                    showRewardedAd { }
                     dialog.dismiss()
                 }
                 dialog.show()
                 return
             }
             lifecycleScope.launch {
-
                 val dialog = BottomSheetDialog(requireActivity(), R.style.SheetDialog)
                 dialog.setContentView(R.layout.dialog_bottom_start_download)
                 val videoQualityTv = dialog.findViewById<Button>(R.id.btn_clear)
@@ -662,7 +538,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 dialog.setCanceledOnTouchOutside(false)
                 videoQualityTv?.setOnClickListener {
                     showRewardedAd { }
-                    videoDownloadR(link, urlType)
+                    videoDownloadR(link)
                     dialog.dismiss()
                     downloadingDialog.show()
 
@@ -672,7 +548,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
 
         } catch (e: NullPointerException) {
             e.printStackTrace()
-            Log.d("TAG", "onPostExecute: error!!!$e")
             Toast.makeText(requireActivity(), "Video Not Found", Toast.LENGTH_SHORT).show()
         }
     }
@@ -705,7 +580,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
         }
     }
 
-    private fun videoDownloadR(videoUrl: String?, urlType: Int) {
+    private fun videoDownloadR(videoUrl: String?) {
         binding.apply {
             //Log.d(TAG, "onPostExecute: " + result);
             Log.d("TAG", "video url: $videoUrl")
@@ -714,11 +589,73 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                     .show()
                 return
             }
-            val fVideo: FVideo = startDownload(requireActivity(), videoUrl, urlType) ?: return
+            val fVideo: FVideo = startDownload(requireActivity(), videoUrl) ?: return
             downloadVideos[fVideo.downloadId] = fVideo
             linkEt.setText("")
         }
 
+    }
+
+    //Ads Views
+    private fun showNativeAd() {
+        if (remoteConfig.nativeAd) {
+            nativeAd = googleManager.createNativeAdSmall()
+            nativeAd?.let {
+                val nativeAdLayoutBinding = NativeAdBannerLayoutBinding.inflate(layoutInflater)
+                nativeAdLayoutBinding.nativeAdView.loadNativeAd(ad = it)
+                binding.nativeView.removeAllViews()
+                binding.nativeView.addView(nativeAdLayoutBinding.root)
+                binding.nativeView.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun showDropDown() {
+        val nativeAdCheck = googleManager.createNativeFull()
+        nativeAdCheck?.let {
+            binding.apply {
+                dropLayout.bringToFront()
+                nativeViewDrop.bringToFront()
+            }
+            val nativeAdLayoutBinding = MediumNativeAdLayoutBinding.inflate(layoutInflater)
+            nativeAdLayoutBinding.nativeAdView.loadNativeAd(ad = it)
+            binding.nativeViewDrop.removeAllViews()
+            binding.nativeViewDrop.addView(nativeAdLayoutBinding.root)
+            binding.nativeViewDrop.visibility = View.VISIBLE
+            binding.dropLayout.visibility = View.VISIBLE
+
+            binding.btnDropDown.setOnClickListener {
+                binding.dropLayout.visibility = View.GONE
+            }
+            binding.btnDropUp.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun showInterstitialAd(callback: () -> Unit) {
+        if (remoteConfig.showInterstitial) {
+            val ad: InterstitialAd? =
+                googleManager.createInterstitialAd(GoogleInterstitialType.MEDIUM)
+
+            if (ad == null) {
+                callback.invoke()
+                return
+            } else {
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        super.onAdDismissedFullScreenContent()
+                        callback.invoke()
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                        super.onAdFailedToShowFullScreenContent(error)
+                        callback.invoke()
+                    }
+                }
+                ad.show(requireActivity())
+            }
+        } else {
+            callback.invoke()
+        }
     }
 
     private fun showRewardedAd(callback: () -> Unit) {
@@ -728,27 +665,23 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 callback.invoke()
                 return
             }
-            if (true) {
-                val ad: RewardedAd? =
-                    googleManager.createRewardedAd()
+            val ad: RewardedAd? =
+                googleManager.createRewardedAd()
 
-                if (ad == null) {
-                    callback.invoke()
-                } else {
-                    ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            if (ad == null) {
+                callback.invoke()
+            } else {
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
 
-                        override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                            super.onAdFailedToShowFullScreenContent(error)
-                            callback.invoke()
-                        }
-                    }
-
-                    ad.show(requireActivity()) {
+                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                        super.onAdFailedToShowFullScreenContent(error)
                         callback.invoke()
                     }
                 }
-            } else {
-                callback.invoke()
+
+                ad.show(requireActivity()) {
+                    callback.invoke()
+                }
             }
         } else {
             callback.invoke()

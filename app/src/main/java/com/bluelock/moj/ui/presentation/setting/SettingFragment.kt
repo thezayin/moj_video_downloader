@@ -15,6 +15,7 @@ import com.bluelock.moj.R
 import com.bluelock.moj.databinding.FragmentSettingBinding
 import com.bluelock.moj.remote.RemoteConfig
 import com.bluelock.moj.ui.presentation.base.BaseFragment
+import com.bluelock.moj.util.isConnected
 import com.example.ads.GoogleManager
 import com.example.ads.databinding.MediumNativeAdLayoutBinding
 import com.example.ads.databinding.NativeAdBannerLayoutBinding
@@ -24,6 +25,7 @@ import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -65,7 +67,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>() {
                 }
 
                 lTerm.setOnClickListener {
-                    showInterstitialAd { }
+                    showRewardedAd { }
                     val intent = Intent(
                         Intent.ACTION_VIEW,
                         Uri.parse("https://bluelocksolutions.blogspot.com/2023/08/terms-and-condition-for-moj.html")
@@ -73,7 +75,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>() {
                     startActivity(intent)
                 }
                 lPrivacy.setOnClickListener {
-                    showInterstitialAd { }
+                    showRewardedAd { }
                     val intent = Intent(
                         Intent.ACTION_VIEW,
                         Uri.parse("https://bluelocksolutions.blogspot.com/2023/08/privacy-policy-for-moj-video-downloader.html")
@@ -81,17 +83,17 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>() {
                     startActivity(intent)
                 }
                 lContact.setOnClickListener {
-                    showInterstitialAd { }
+                    showRewardedAd { }
                     val emailIntent = Intent(
                         Intent.ACTION_SENDTO,
                         Uri.parse("mailto:blue.lock.testing@gmail.com")
                     )
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Snap Video Downloader")
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Moj Downloader")
                     emailIntent.putExtra(Intent.EXTRA_TEXT, "your message here")
                     startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
                 }
                 lShare.setOnClickListener {
-                    showInterstitialAd { }
+                    showRewardedAd { }
                     try {
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.type = "text/plain"
@@ -112,6 +114,35 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>() {
         }
     }
 
+    private fun showRewardedAd(callback: () -> Unit) {
+        if (remoteConfig.showInterstitial) {
+
+            if (!requireActivity().isConnected()) {
+                callback.invoke()
+                return
+            }
+            val ad: RewardedAd? =
+                googleManager.createRewardedAd()
+
+            if (ad == null) {
+                callback.invoke()
+            } else {
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+
+                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                        super.onAdFailedToShowFullScreenContent(error)
+                        callback.invoke()
+                    }
+                }
+
+                ad.show(requireActivity()) {
+                    callback.invoke()
+                }
+            }
+        } else {
+            callback.invoke()
+        }
+    }
 
     private fun showInterstitialAd(callback: () -> Unit) {
         if (remoteConfig.showInterstitial) {
@@ -139,7 +170,6 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>() {
             callback.invoke()
         }
     }
-
 
     private fun showNativeAd() {
         if (remoteConfig.nativeAd) {

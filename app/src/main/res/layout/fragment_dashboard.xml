@@ -5,7 +5,17 @@
     android:layout_height="match_parent"
     android:background="@color/back_ground">
 
-
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/frame_btn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cvv"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/main_anime" />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn_setting"
         android:layout_width="@dimen/_40sdp"
@@ -47,13 +57,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_25sdp"
-        android:layout_marginTop="@dimen/_140sdp"
         android:text="Hi, There!"
         android:textColor="@color/text_color"
         android:textSize="@dimen/_22ssp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_downloaded" />
 
     <TextView
         android:id="@+id/subtitle"
@@ -62,7 +71,7 @@
         android:layout_marginStart="@dimen/_25sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_25sdp"
-        android:text="Download your favourite Moj videos and reels without watermark for free."
+        android:text="Download your favourite videos and reels without watermark for free."
         android:textColor="@color/text_color"
         android:textSize="@dimen/_14ssp"
         app:layout_constraintEnd_toEndOf="parent"
