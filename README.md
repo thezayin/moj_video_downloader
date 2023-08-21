@@ -18,7 +18,7 @@ Complete optimized code to download any private or public video form moj-app wit
 
 **Features**
 
-1. Download videos from Moj withour water-marks
+1. Download videos from Moj without water-marks
 2. Download videos with the built-in download manager
 3. Play videos offline with the built-in player
 
