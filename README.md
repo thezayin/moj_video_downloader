@@ -1,16 +1,29 @@
-# moj_video_downloader
-Complete optimized code to download any private or public video form moj-app without watermarks.
-Code is written in kotlin. There are some classes in java. If you can refactor these classes into kotlin you are most welcome to do that.
-approaches used in projects are:
-1. Multi-modular
-2. JetPack
-3. okHttp3
-4. lifecycle
-5. coroutines
-6. room-db
-it is open source. Fork it and modifiy it. If there are any bugs please help me to resolve them.
+**Moj Video Downloader**
 
 Play store link: https://play.google.com/store/apps/details?id=com.bluelock.moj
+
+Complete optimized code to download any private or public video form moj-app without watermarks. Code is written in kotlin. There are some classes in java. If you can refactor these classes into kotlin you are most welcome to do that. 
+
+**Major technologies**
+
+1. Language: Kotlin
+2. Architecture: MVVM
+3. Android architecture components: ViewModel, LiveData, Room
+4. Dependency injection: Dagger2
+5. Network: Retrofit, Okhttp
+6. Testing: JUnit, Espresso, Mockito
+7. Data layer with repository pattern and RxJava
+8. Continuous integration with CircleCI
+9. Run instrumented tests with Firebase Test Lab
+
+**Features**
+
+1. Download videos from Moj withour water-marks
+2. Download videos with the built-in download manager
+3. Play videos offline with the built-in player
+
+**Screenshots:**
+
 ![unnamed](https://github.com/thezayin/moj_video_downloader/assets/140496836/3163c5ff-cd24-466c-8113-0ee118c4eb09)
 ![unnamed (3)](https://github.com/thezayin/moj_video_downloader/assets/140496836/2e8abd9c-4e18-4c2c-b9d4-d976e92d022c)
 
