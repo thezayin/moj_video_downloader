@@ -103,10 +103,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreatedView() {
         showDownloadingDialog()
-        if (remoteConfig.nativeAd) {
-            showDropDown()
-        }
-        showNativeAd()
         activity = requireActivity()
         onCreateIsCalled = true
         checkPermission()
@@ -132,7 +128,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
         initViews()
         handleIntent()
         observe()
-        showRecursiveAds()
+        if (remoteConfig.showInterstitial) {
+            showNativeAd()
+            showRecursiveAds()
+        }
     }
 
     private fun showDownloadingDialog() {
@@ -250,9 +249,17 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
     private fun observe() {
         binding.apply {
             btnSetting.setOnClickListener {
-                showRewardedAd {}
                 val action = DashboardFragmentDirections.actionDashboardFragmentToSettingFragment()
                 findNavController().navigate(action)
+            }
+
+            ivCross.setOnClickListener {
+                showInterstitialAd {}
+                linkEt.text = null
+            }
+
+            btnDownloaded.setOnClickListener {
+                findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToDownloadedFragment())
             }
 
             linkEt.addTextChangedListener(object : TextWatcher {
@@ -278,16 +285,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                     Log.d("jejeYes", "after")
                 }
             })
-
-            ivCross.setOnClickListener {
-                showInterstitialAd {}
-                linkEt.text = null
-            }
-
-            btnDownloaded.setOnClickListener {
-                showRewardedAd { }
-                findNavController().navigate(DashboardFragmentDirections.actionDashboardFragmentToDownloadedFragment())
-            }
 
             btnDownload.setOnClickListener {
                 showInterstitialAd { }
@@ -465,12 +462,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 }
 
                 btnOk?.setOnClickListener {
-                    showRewardedAd {}
+                    showInterstitialAd {}
                     dialog.dismiss()
 
                 }
                 btnClose?.setOnClickListener {
-                    showRewardedAd {}
+                    showInterstitialAd {}
                     dialog.dismiss()
                 }
 
@@ -506,12 +503,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 dialog.setCanceledOnTouchOutside(false)
 
                 btnOk?.setOnClickListener {
-                    showRewardedAd {}
+                    showInterstitialAd {}
                     dialog.dismiss()
 
                 }
                 btnCancel?.setOnClickListener {
-                    showRewardedAd { }
+                    showInterstitialAd { }
                     dialog.dismiss()
                 }
                 dialog.show()
@@ -537,11 +534,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
                 dialog.behavior.isDraggable = false
                 dialog.setCanceledOnTouchOutside(false)
                 videoQualityTv?.setOnClickListener {
-                    showRewardedAd { }
-                    videoDownloadR(link)
-                    dialog.dismiss()
-                    downloadingDialog.show()
-
+                    showRewardedAd {
+                        videoDownloadR(link)
+                        dialog.dismiss()
+                        downloadingDialog.show()
+                    }
                 }
                 dialog.show()
             }
@@ -582,7 +579,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
 
     private fun videoDownloadR(videoUrl: String?) {
         binding.apply {
-            //Log.d(TAG, "onPostExecute: " + result);
             Log.d("TAG", "video url: $videoUrl")
             if (videoUrl == null || videoUrl == "") {
                 Toast.makeText(activity, "This video quality is not available", Toast.LENGTH_SHORT)
@@ -660,7 +656,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
 
     private fun showRewardedAd(callback: () -> Unit) {
         if (remoteConfig.showInterstitial) {
-
             if (!requireActivity().isConnected()) {
                 callback.invoke()
                 return
@@ -693,10 +688,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (this.isActive) {
                     showNativeAd()
-                    if (remoteConfig.nativeAd) {
-                        showNativeAd()
-                    }
-                    delay(5000L)
+                    showDropDown()
+                    delay(30000L)
                 }
             }
         }
