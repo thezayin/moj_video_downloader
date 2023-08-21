@@ -14,8 +14,7 @@ Play store link: https://play.google.com/store/apps/details?id=com.bluelock.moj
 ![unnamed](https://github.com/thezayin/moj_video_downloader/assets/140496836/3163c5ff-cd24-466c-8113-0ee118c4eb09)
 ![unnamed (3)](https://github.com/thezayin/moj_video_downloader/assets/140496836/2e8abd9c-4e18-4c2c-b9d4-d976e92d022c)
 
-![unnamed (2)](https://github.com/thezayin/moj_video_downloader/assets/140496836/78b3ba5b-73f6-4d9f-9f7a-d55533964a65)
-![unnamed (2)](https://github.com/thezayin/moj_video_downloader/assets/140496836/b0a8dbc2-af28-492d-81de-d71306bc5ebd)
 ![unnamed](https://github.com/thezayin/moj_video_downloader/assets/140496836/8e1ef9b0-1e73-43ad-9646-326186393e83)
-
+![unnamed (1)](https://github.com/thezayin/moj_video_downloader/assets/140496836/c7c3bacb-ddc6-4fd3-bb1f-cd1cecfbe584)
+![unnamed (2)](https://github.com/thezayin/moj_video_downloader/assets/140496836/78b3ba5b-73f6-4d9f-9f7a-d55533964a65)
 
