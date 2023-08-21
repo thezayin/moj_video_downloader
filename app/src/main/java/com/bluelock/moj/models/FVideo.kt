@@ -2,13 +2,9 @@ package com.bluelock.moj.models
 
 class FVideo {
     var isWatermarked = false
-
-    //Initial download path
     var outputPath: String? = null
     var fileName: String? = null
     var downloadId: Long = 0
-
-    //Where file actually saved in memory after processing
     var fileUri: String? = null
     var state = 0
     var videoSource = 0

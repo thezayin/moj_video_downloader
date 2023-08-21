@@ -5,20 +5,15 @@ import android.os.Parcelable;
 
 
 public class DataModel implements Parcelable {
-    private String filename;
-    private String filepath;
-
-    public DataModel(String paramString1, String paramString2) {
-        this.filepath = paramString1;
-        this.filename = paramString2;
-    }
+    private final String filename;
+    private final String filepath;
 
     protected DataModel(Parcel in) {
         filename = in.readString();
         filepath = in.readString();
     }
 
-    public static final Creator<DataModel> CREATOR = new Creator<DataModel>() {
+    public static final Creator<DataModel> CREATOR = new Creator<>() {
         @Override
         public DataModel createFromParcel(Parcel in) {
             return new DataModel(in);
@@ -29,22 +24,6 @@ public class DataModel implements Parcelable {
             return new DataModel[size];
         }
     };
-
-    public String getFileName() {
-        return this.filename;
-    }
-
-    public String getFilePath() {
-        return this.filepath;
-    }
-
-    public void setFileName(String paramString) {
-        this.filename = paramString;
-    }
-
-    public void setFilePath(String paramString) {
-        this.filepath = paramString;
-    }
 
     @Override
     public int describeContents() {

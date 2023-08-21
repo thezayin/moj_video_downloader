@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+/** @noinspection ALL */
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
     private final ItemClickListener itemClickListener;
@@ -87,6 +88,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         void onItemClickListener(FVideo video);
     }
 
+    /** @noinspection deprecation*/
     class ListViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
         TextView tvVideoTitle;

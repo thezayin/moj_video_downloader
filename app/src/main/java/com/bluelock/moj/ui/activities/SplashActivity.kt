@@ -1,5 +1,6 @@
 package com.bluelock.moj.ui.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bluelock.moj.databinding.ActivitySplashBinding
 import com.bluelock.moj.remote.RemoteConfig
-import com.bluelock.snapchatdownloader.util.isConnected
+import com.bluelock.moj.util.isConnected
 import com.example.ads.GoogleManager
 import com.example.ads.newStrategy.types.GoogleInterstitialType
 import com.google.android.gms.ads.AdError
@@ -18,9 +19,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("UNREACHABLE_CODE")
+@SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
-    lateinit var binding: ActivitySplashBinding
+    private lateinit var binding: ActivitySplashBinding
 
     private var progressStatus = 0
 
@@ -50,7 +53,7 @@ class SplashActivity : AppCompatActivity() {
                     } else {
                         if (remoteConfig.showAppOpenAd) {
                             if (getAppOpenAd()) {
-                                Log.d("jejesplash", "done")
+                                Log.d("jejeSplash", "done")
                             } else {
                                 showInterstitialAd {
                                     navigateToNextScreen()

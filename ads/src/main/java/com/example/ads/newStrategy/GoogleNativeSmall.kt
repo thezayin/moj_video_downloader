@@ -14,11 +14,11 @@ import java.util.Stack
 class GoogleNativeSmall(context: Context?) {
     private val totalLevels = 4
     private var adUnits: ArrayList<ArrayList<Any>>? = null
-    private val native5 = "ca-app-pub-9507635869843997/3012038771"
-    private val native4 = "ca-app-pub-9507635869843997/4325120442"
-    private val nativeHigh = "ca-app-pub-9507635869843997/2461374431"
-    private val nativeMed = "ca-app-pub-9507635869843997/6209047756"
-    private val nativeAll = "ca-app-pub-9507635869843997/8452067711"
+    private val native5 = "ca-app-pub-9507635869843997/5989172434"
+    private val native4 = "ca-app-pub-9507635869843997/3885753271"
+    private val nativeHigh = "ca-app-pub-9507635869843997/9736845759"
+    private val nativeMed = "ca-app-pub-9507635869843997/4676090760"
+    private val nativeAll = "ca-app-pub-9507635869843997/7113130962"
 
     init {
         instantiateList()
@@ -27,6 +27,15 @@ class GoogleNativeSmall(context: Context?) {
 
     private fun instantiateList() {
         adUnits = ArrayList()
+
+
+//        val testId="ca-app-pub-3940256099942544/2247696110"
+//        adUnits!!.add(0, ArrayList(listOf(testId, Stack<NativeAd>())))
+//        adUnits!!.add(1, ArrayList(listOf(testId, Stack<NativeAd>())))
+//        adUnits!!.add(2, ArrayList(listOf(testId, Stack<NativeAd>())))
+//        adUnits!!.add(3, ArrayList(listOf(testId, Stack<NativeAd>())))
+//        adUnits!!.add(4, ArrayList(listOf(testId, Stack<NativeAd>())))
+
         adUnits!!.add(0, ArrayList(listOf(native5, Stack<NativeAd>())))
         adUnits!!.add(1, ArrayList(listOf(native4, Stack<NativeAd>())))
         adUnits!!.add(2, ArrayList(listOf(nativeHigh, Stack<NativeAd>())))

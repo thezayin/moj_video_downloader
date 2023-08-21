@@ -6,6 +6,9 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-9507635869843997~5365959121" />
+            android:value="ca-app-pub-9507635869843997~2490338177" />
+
+        <meta-data android:name="applovin.sdk.key"
+            android:value="qH5QuMDI8UBpePV0SReInPerw0WqiPVi3mkzC0X6x8bCpLZNsAoMGQvzKKrBd1KXDOoOOhMklSPUlmrEaMNhA8"/>
     </application>
 </manifest>

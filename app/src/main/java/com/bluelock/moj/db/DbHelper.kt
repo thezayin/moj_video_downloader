@@ -42,56 +42,12 @@ class DbHelper(context: Context?) :
         return true
     }
 
-    val allVideos: ArrayList<FVideo>
-        get() {
-            val arrayList = ArrayList<FVideo>()
-            val db = this.readableDatabase
-            val res = db.rawQuery(
-                "select * from " + FacebookDownloadEntity.TABLE_NAME + " ORDER BY " + FacebookDownloadEntity.COLUMN_DOWNLOAD_TIME + " DESC",
-                null
-            )
-            res.moveToFirst()
-            while (!res.isAfterLast) {
-                val video = FVideo(res.getLong(FacebookDownloadEntity.INDEX_DOWNLOAD_TIME))
-                video.fileName = res.getString(FacebookDownloadEntity.INDEX_FILE_NAME)
-                video.state = res.getInt(FacebookDownloadEntity.INDEX_STATE)
-                video.fileUri = res.getString(FacebookDownloadEntity.INDEX_FILE_URI)
-                video.downloadId = res.getLong(FacebookDownloadEntity.INDEX_DOWNLOAD_ID)
-                video.outputPath = res.getString(FacebookDownloadEntity.INDEX_OUTPUT_PATH)
-                video.videoSource = res.getInt(FacebookDownloadEntity.INDEX_VIDEO_SOURCE)
-                arrayList.add(video)
-                res.moveToNext()
-            }
-            return arrayList
-        }
     val recentVideos: ArrayList<FVideo>
         get() {
             val arrayList = ArrayList<FVideo>()
             val db = this.readableDatabase
             val res = db.rawQuery(
                 "select * from " + FacebookDownloadEntity.TABLE_NAME + " ORDER BY " + FacebookDownloadEntity.COLUMN_DOWNLOAD_TIME + " DESC LIMIT 10",
-                null
-            )
-            res.moveToFirst()
-            while (!res.isAfterLast) {
-                val video = FVideo(res.getLong(FacebookDownloadEntity.INDEX_DOWNLOAD_TIME))
-                video.fileName = res.getString(FacebookDownloadEntity.INDEX_FILE_NAME)
-                video.state = res.getInt(FacebookDownloadEntity.INDEX_STATE)
-                video.fileUri = res.getString(FacebookDownloadEntity.INDEX_FILE_URI)
-                video.downloadId = res.getLong(FacebookDownloadEntity.INDEX_DOWNLOAD_ID)
-                video.outputPath = res.getString(FacebookDownloadEntity.INDEX_OUTPUT_PATH)
-                video.videoSource = res.getInt(FacebookDownloadEntity.INDEX_VIDEO_SOURCE)
-                arrayList.add(video)
-                res.moveToNext()
-            }
-            return arrayList
-        }
-    val facebookVideos: ArrayList<FVideo>
-        get() {
-            val arrayList = ArrayList<FVideo>()
-            val db = this.readableDatabase
-            val res = db.rawQuery(
-                "select * from " + FacebookDownloadEntity.TABLE_NAME + " where " + FacebookDownloadEntity.COLUMN_VIDEO_SOURCE + "= " + FVideo.FACEBOOK + " ORDER BY " + FacebookDownloadEntity.COLUMN_DOWNLOAD_TIME + " DESC ",
                 null
             )
             res.moveToFirst()

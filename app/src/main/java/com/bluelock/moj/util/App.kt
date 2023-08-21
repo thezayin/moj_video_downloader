@@ -9,8 +9,10 @@ import javax.inject.Inject
 class App : Application() {
     @Inject
     lateinit var googleManager: GoogleManager
+
     override fun onCreate() {
         super.onCreate()
         googleManager.init()
+
     }
 }

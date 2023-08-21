@@ -11,11 +11,11 @@ import java.util.Stack
 class GoogleRewarded(context: Context?) {
     private val totalLevels = 4
     private var adUnits: ArrayList<ArrayList<Any>>? = null
-    private val reward5 = "ca-app-pub-9507635869843997/3366481740"
-    private val reward4 = "ca-app-pub-9507635869843997/5992645084"
-    private val rewardHigh = "ca-app-pub-9507635869843997/1507385413"
-    private val rewardMed = "ca-app-pub-9507635869843997/9931890094"
-    private val rewardAll = "ca-app-pub-9507635869843997/9490920861"
+    private val reward5 = "ca-app-pub-9507635869843997/4486967625"
+    private val reward4 = "ca-app-pub-9507635869843997/4990951389"
+    private val rewardHigh = "ca-app-pub-9507635869843997/6506362974"
+    private val rewardMed = "ca-app-pub-9507635869843997/3880199633"
+    private val rewardAll = "ca-app-pub-9507635869843997/2567117969"
 
     init {
         instantiateList()
@@ -24,6 +24,16 @@ class GoogleRewarded(context: Context?) {
 
     private fun instantiateList() {
         adUnits = ArrayList()
+
+
+//        val testId = "ca-app-pub-3940256099942544/5224354917"
+//
+//        adUnits!!.add(0, ArrayList(listOf(testId, Stack<RewardedAd>())))
+//        adUnits!!.add(1, ArrayList(listOf(testId, Stack<RewardedAd>())))
+//        adUnits!!.add(2, ArrayList(listOf(testId, Stack<RewardedAd>())))
+//        adUnits!!.add(3, ArrayList(listOf(testId, Stack<RewardedAd>())))
+//        adUnits!!.add(4, ArrayList(listOf(testId, Stack<RewardedAd>())))
+
         adUnits!!.add(0, ArrayList(listOf(reward5, Stack<RewardedAd>())))
         adUnits!!.add(1, ArrayList(listOf(reward4, Stack<RewardedAd>())))
         adUnits!!.add(2, ArrayList(listOf(rewardHigh, Stack<RewardedAd>())))
