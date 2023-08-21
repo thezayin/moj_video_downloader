@@ -9,6 +9,9 @@ approaches used in projects are:
 5. coroutines
 6. room-db
 it is open source. Fork it and modifiy it. If there are any bugs please help me to resolve them.
+
+Play store link: https://play.google.com/store/apps/details?id=com.bluelock.moj
+
 ![unnamed](https://github.com/thezayin/moj_video_downloader/assets/140496836/3163c5ff-cd24-466c-8113-0ee118c4eb09)
 ![Uploading unnamed (3).png…]()
 ![unnamed (2)](https://github.com/thezayin/moj_video_downloader/assets/140496836/78b3ba5b-73f6-4d9f-9f7a-d55533964a65)
